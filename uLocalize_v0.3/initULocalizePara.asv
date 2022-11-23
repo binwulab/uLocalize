@@ -1,0 +1,41 @@
+function p=initULocalizePara(varargin)
+%Obj: initialize the parameter structure for the uLocalize
+%To change the default parameters, use the ParameterName, Value pair
+%For example:
+%   
+ip=inputParser;
+ip.addParameter('numdim',3,@(x) isnumeric(x) && isscalar(x));
+ip.addParameter('sigma_xy',1, @(x) isnumeric(x) && isscalar(x) && x>0);
+ip.addParameter('sigma_z',1, @(x) isnumeric(x) && isscalar(x) && x>0);
+ip.addParameter('cutsize',3, @(x) isnumeric(x) && isscalar(x) && x>0);
+ip.addParameter('thickness',1, @(x) isinteger(x) && isscalar(x) && x>0);
+ip.addParameter('thresh',3, @(x) isnumeric(x) && isscalar(x) && x>0);
+ip.addParameter('tol',0.001,@(x) isnumeric(x) && isscalar(x) && x>0);
+ip.addParameter('max_count',50000,@(x) isnumeric(x) && isinteger(x) && x>0);
+ip.addParameter('nlo',10, @(x) isnumeric(x) && isscalar(x) && x>0);
+ip.addParameter('nhi',3, @(x) isnumeric(x) && isscalar(x) && x>0);
+ip.addParameter('ROIsize',2, @(x) isnumeric(x) && isscalar(x) && x>0);
+ip.addParameter('method','GaussianMask', @(x) ismember(x,{'GaussianMask','GaussianFit'}));
+ip.parse(varargin);
+
+    p.numdim=ip.Results.numdim;
+    p.sigma_xy=ip.Results.sigma_xy;
+    p.sigma_z=ip.Results.sigma_z;
+    p.cutsize=ip.Results.cutsize;    %
+    p.cutwidth = [ceil(p.cutsize*p.sigma_xy) ceil(p.cutsize*p.sigma_z)]; %The actual cropped image size 2*cutwidth+1;
+    p.thickness=ip.Results.thickness;      %With the new implementation, thickness could be set to 2
+    p.thresh=ip.Results.thresh;
+    p.tol=ip.Results.tol;
+    p.max_count=ip.Results.max_count; %maximal number of points allowed
+    p.filter.nlo=ip.Results.nlo;
+    p.filter.nhi=ip.Results.nhi;
+    p.filter.numdim=2;
+    p.filter.width=0.01;
+    p.maxIter=100;  %for the Gaussian Mask iteration
+    p.ROIsize=ip.Results.ROIsize;    %The distance between neiboring local maximum used in the pre-detection
+    p.method=ip.Results.fitMethod; %Possible: 'GaussianFit3D', 'GaussianFit2D', 'GaussianMask2D'
+    p.denseMode=0;
+    p.dx=108.3;
+    p.dy=108.3;
+    p.dz=200;
+end
